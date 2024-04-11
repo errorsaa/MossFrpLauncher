@@ -1,0 +1,81 @@
+import win.ui;
+import web.view;
+import web.json;
+import win.clip;
+import process.popen;
+import win.util.tray;
+/*DSG{{*/
+mainForm = win.form(text="MossFrp Launcher";right=1100;bottom=599;border="dialog frame";max=false)
+mainForm.add()
+/*}}*/
+
+thread.invoke( function(){
+	import wsock.tcp.simpleHttpServer;
+	var server = wsock.tcp.simpleHttpServer("localhost", 37161);
+	server.run( 
+    	function(response,request,session){
+         	select(request.uri) {
+         		case '/' {
+         			response.loadcode("/web/index.html");
+         		}
+         		else {
+         			response.loadcode("/web"+request.path);
+         		}
+         	}
+    	} 	
+	);
+});
+
+if (io.exist('/bin/frpc.exe') == null) string.save("/bin/frpc.exe", string.load("~/res/frpc.exe"));
+if (io.exist('/bin/tools.exe') == null) string.save("/bin/tools.exe", string.load("~/res/tools.exe"));
+mainForm.tray = win.util.tray(mainForm);
+
+var theView  = web.view(mainForm);
+var procs = {};
+
+theView.external = {
+    writeText = function(text){
+    	win.clip.write(text);
+    };
+    writeFile = function(path, text){
+    	string.save(path, text);
+    };
+    createProc = function(node, id, command){
+    	procs[id] = process.popen.cmd(command);
+    	win.delay(1000)
+    	var ec,ie = procs[id].getExitCode()
+    	var info = string.format("隧道%s-%s启动%s,详细信息请到日志页面查看", node, id, ie ? "失败" : "成功")
+		mainForm.tray.pop(info, "提示")
+    };
+    exitProc = function(id){
+    	procs[id].ctrlEvent(0)
+    	procs[id].close()
+    	procs[id] = null
+    };
+    getProcOut = function(id){
+        return string.concat(procs[id].peek(0))
+    };
+    to = function(path){
+    	process.popen.cmd("start "++path).close()
+    };
+    update = function(version1, version2){
+    	if (win.msgboxTest(string.format('检测到新版本是否更新\r\n当前版本：%s\r\n新版本：%s',version1,version2),"提示")) {
+    		process.popen.cmd(string.format('start ./bin/tools.exe -type update -path "%s"',io._exefile)).close();
+    		mainForm.close();
+    	}
+    }
+}
+
+theView.enableDefaultContextMenus(false);
+theView.enableDevTools(false);
+theView.go("http://localhost:37161");
+
+mainForm.onClose = function(hwnd,message,wParam,lParam){
+	for(k,v in procs){
+		v.ctrlEvent(0)
+		v.close()
+	}	
+}
+
+mainForm.show();
+win.loopMessage();

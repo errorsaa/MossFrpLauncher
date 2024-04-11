@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project ver="10" name="MossFrpLauncher" libEmbed="true" icon="..\mossfrp.ico" ui="win" output="MossFrpLauncher.exe" CompanyName="aardio" FileDescription="MossFrpLauncher" LegalCopyright="Copyright (C) 作者 2024" ProductName="MossFrpLauncher" InternalName="MossFrpLauncher" FileVersion="1.0.1.14" ProductVersion="1.0.1.14" publishDir="/dist/" dstrip="false" local="false" ignored="false">
+	<file name="main" path="main.aardio"/>
+	<folder name="网页" path="web" embed="true" comment="目录" local="true" ignored="false">
+		<file name="index.html" path="web\index.html" comment="web\index.html"/>
+		<file name="index.js" path="web\index.js" comment="web\index.js"/>
+	</folder>
+	<folder name="网页源码" path="web.src" embed="false" comment="目录" local="false" ignored="true"/>
+	<folder name="资源文件" path="res" embed="true" comment="目录" local="false" ignored="false">
+		<file name="frpc.exe" path="res\frpc.exe" comment="res\frpc.exe"/>
+		<file name="tools.exe" path="res\tools.exe" comment="res\tools.exe"/>
+	</folder>
+</project>

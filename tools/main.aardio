@@ -1,0 +1,16 @@
+import console;
+import inet.httpFile;
+
+console.open();
+
+var args = _ARGV;
+
+if (args.type == "update") {
+	console.log("下载时间较长，请耐心等待...");
+	inet.httpFile("http://up.happy233.click/file","./tmp.tmp").download();
+	io.remove("./"++args.path);
+	io.rename("./tmp.tmp","./MossFrp Launcher.exe");
+	console.log("已下载完成请手动启动");
+}
+
+console.pause(true);
